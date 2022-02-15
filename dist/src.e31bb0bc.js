@@ -196,11 +196,11 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.fetchCountries = void 0;
-var BASE_URL = "https://restcountries.com/v3.1/name/";
-var countryParam = "?fields=name,capital,population,flags,languages";
+const BASE_URL = 'https://restcountries.com/v3.1/name/';
+const countryParam = `?fields=name,capital,population,flags,languages`;
 
-var fetchCountries = function fetchCountries(name) {
-  return fetch("".concat(BASE_URL).concat(name).concat(countryParam)).then(function (responce) {
+const fetchCountries = name => {
+  return fetch(`${BASE_URL}${name}${countryParam}`).then(responce => {
     if (!responce.ok) {
       throw new Error(responce.message);
     } else {
@@ -1186,46 +1186,74 @@ var _fetchCountries = require("./java-script/fetchCountries");
 
 var _notiflixNotifyAio = require("notiflix/build/notiflix-notify-aio");
 
-var debounce = require("lodash.debounce");
+const debounce = require('lodash.debounce');
 
-var DEBOUNCE_DELAY = 300;
-var refs = {
-  input: document.querySelector("#search-box"),
-  list: document.querySelector(".country-list"),
-  div: document.querySelector(".country-info")
+const DEBOUNCE_DELAY = 300;
+const refs = {
+  input: document.querySelector('#search-box'),
+  list: document.querySelector('.country-list'),
+  div: document.querySelector('.country-info')
 };
-refs.input.addEventListener("input", debounce(handleInputCountr, DEBOUNCE_DELAY));
+refs.input.addEventListener('input', debounce(handleInputCountr, DEBOUNCE_DELAY));
+
+function clearPage() {
+  refs.div.innerHTML = '';
+  refs.list.innerHTML = '';
+}
 
 function handleInputCountr(event) {
-  var valueInput = event.target.value.trim();
+  const valueInput = event.target.value.trim();
 
   if (!valueInput) {
+    clearPage();
     return;
   }
 
-  (0, _fetchCountries.fetchCountries)(valueInput).then(function (response) {
-    console.log(response);
+  (0, _fetchCountries.fetchCountries)(valueInput).then(response => {
+    clearPage();
 
     if (response.length === 1) {
+      clearPage();
       renderCountry(response);
+    } else if (response.length > 1 && response.length <= 10) {
+      clearPage();
+      infoCountrList(response);
+    } else {
+      _notiflixNotifyAio.Notify.info('Too many matches found. Please enter a more specific name.');
     }
+  }).catch(error => _notiflixNotifyAio.Notify.warning('Oops, there is no country with that name'));
+}
 
-    if (response.length < 10) {
-      "";
-    }
-  });
+function infoCountrList(array) {
+  const arrayCountry = array.map(({
+    name,
+    flags
+  }) => {
+    return `<li class="item">
+  <img src="${flags.svg}" alt="${name.official}" width=60px/>
+  <h2>${name.official}</h2>
+</li>`;
+  }).join('');
+  refs.list.insertAdjacentHTML('afterbegin', arrayCountry);
 }
 
 function renderCountry(array) {
-  var arrayCountry = array.map(function (_ref) {
-    var name = _ref.name,
-        capital = _ref.capital,
-        population = _ref.population,
-        flags = _ref.flags,
-        languages = _ref.languages;
-    return "<div>\n  <img src=\"".concat(flags.svg, "\" alt=\"").concat(name.official, "\" width=50px/>\n</div>\n<h2>").concat(name.official, "</h2>\n<span>Capital:").concat(capital, "</span>\n<span>Population:").concat(population, "</span>\n<span>Languages:").concat(Object.values(languages).join(", "), "</span>");
-  }).join();
-  refs.div.insertAdjacentHTML("afterbegin", arrayCountry);
+  const arrayCountry = array.map(({
+    name,
+    capital,
+    population,
+    flags,
+    languages
+  }) => {
+    return `<div>
+  <img src="${flags.svg}" alt="${name.official}" width=60px class="img-countr"/>
+</div>
+<h2>${name.official}</h2>
+<span>Capital: ${capital}</span>
+<span>Population: ${population}</span>
+<span>Languages: ${Object.values(languages).join(', ')}</span>`;
+  }).join('');
+  refs.div.insertAdjacentHTML('afterbegin', arrayCountry);
 }
 },{"./css/styles.css":"css/styles.css","./java-script/fetchCountries":"java-script/fetchCountries.js","notiflix/build/notiflix-notify-aio":"../node_modules/notiflix/build/notiflix-notify-aio.js","lodash.debounce":"../node_modules/lodash.debounce/index.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -1255,7 +1283,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49833" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62835" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
